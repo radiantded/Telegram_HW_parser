@@ -61,7 +61,7 @@ def main():
 
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.WARNING,
     filename='main.log',
     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s'
 )
