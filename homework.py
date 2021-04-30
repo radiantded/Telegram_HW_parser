@@ -13,29 +13,27 @@ load_dotenv()
 PRAKTIKUM_TOKEN = os.getenv("PRAKTIKUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-LOGGER = logging.getLogger(__name__)
-
 
 logging.basicConfig(
-    level=logging.WARNING,
+    level=logging.INFO,
     filename='main.log',
     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s'
 )
+LOGGER = logging.getLogger(__name__)
 
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
     hw_status = homework.get('status')
-    if homework_name is not None:
-        if hw_status is not None:
-            statuses = {
-                'rejected': 'К сожалению в работе нашлись ошибки.',
-                'approved': ('Ревьюеру всё понравилось, '
-                             'можно приступать к следующему уроку.')
-            }
-            verdict = statuses.get(hw_status)
-            return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
-    return 'Нет данных'
+    if homework_name is None or hw_status is None:
+        return 'Нет данных'
+    statuses = {
+        'rejected': 'К сожалению в работе нашлись ошибки.',
+        'approved': ('Ревьюеру всё понравилось, '
+                     'можно приступать к следующему уроку.')
+    }
+    verdict = statuses.get(hw_status)
+    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def get_homework_statuses(current_timestamp):
@@ -50,17 +48,18 @@ def get_homework_statuses(current_timestamp):
         )
         return homework_statuses.json()
     except Exception:
-        LOGGER.exception()
+        LOGGER.exception('Ошибка')
 
 
 def send_message(message, bot_client):
-    return bot_client.send_message(chat_id=CHAT_ID, text='message')
+    LOGGER.info('Отправка сообщения')
+    return bot_client.send_message(chat_id=CHAT_ID, text=message)
 
 
 def main():
+    LOGGER.debug('Запуск бота')
     bot_client = telegram.Bot(TELEGRAM_TOKEN)
     current_timestamp = int(time.time())  # начальное значение timestamp
-
     while True:
         try:
             new_homework = get_homework_statuses(current_timestamp)
@@ -74,8 +73,9 @@ def main():
             )  # обновить timestamp
             time.sleep(300)  # опрашивать раз в пять минут
 
-        except Exception:
-            logging.exception()
+        except Exception as error:
+            LOGGER.error(error, exc_info=True)
+            print('Произошел сбой в работе бота')
             send_message('Произошел сбой в работе бота', bot_client)
             time.sleep(5)
 
