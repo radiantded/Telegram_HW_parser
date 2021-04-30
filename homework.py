@@ -15,7 +15,7 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     filename='main.log',
     format='%(asctime)s, %(levelname)s, %(name)s, %(message)s'
 )
@@ -71,7 +71,7 @@ def main():
             current_timestamp = new_homework.get(
                 'current_date', current_timestamp
             )  # обновить timestamp
-            time.sleep(300)  # опрашивать раз в пять минут
+            time.sleep(1200)
 
         except Exception as error:
             LOGGER.error(error, exc_info=True)
