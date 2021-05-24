@@ -28,9 +28,10 @@ def parse_homework_status(homework):
     if homework_name is None or hw_status is None:
         return 'Нет данных'
     statuses = {
-        'rejected': 'К сожалению в работе нашлись ошибки.',
+        'reviewing': 'Работа отправлена на проверку',
+        'rejected': 'К сожалению в работе нашлись ошибки',
         'approved': ('Ревьюеру всё понравилось, '
-                     'можно приступать к следующему уроку.')
+                     'можно приступать к следующему уроку')
     }
     verdict = statuses.get(hw_status)
     return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
